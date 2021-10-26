@@ -10,19 +10,14 @@ import Courses from './components/Courses';
 import CourseDetail from './components/CourseDetail';
 import UpdateCourse from './components/UpdateCourse';
 import CreateCourse from './components/CreateCourse';
+import UserSignUp from './components/UserSignUp';
+import UserSignIn from './components/UserSignIn';
+import UserSignOut from './components/UserSignOut';
 
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      courses: []
-    }
     this.api = this.api.bind(this);
-    this.getCourses = this.getCourses.bind(this);
-  }
-
-  componentDidMount() {
-    this.getCourses();
   }
 
   api(path, method = 'GET', body = null) {
@@ -42,24 +37,10 @@ class App extends Component {
     return fetch(url, options);
   }
 
-  async getCourses() {
-    const response = await this.api('/courses');
-    if (response.status === 200) {
-      return response.json().then(data => {
-        this.setState({
-          courses: data
-        })
-      });
-    } else if (response.status === 401) {
-      console.log('Error 401');
-    } else {
-      throw new Error();
-    }
+  async updateCourse(path, data) {
+    const response = await this.api(`/courses/${path}`, 'PUT', data);
+    console.log(response);
   }
-
-  // async updateCourse() {
-  //   const response = await this.api('/course')
-  // }
 
   render() {
     return (
@@ -69,10 +50,13 @@ class App extends Component {
 
           <Switch>
             <Route exact path="/" render={ () => <Redirect to="/courses" />} />
-            <Route exact path="/courses" render={ () => <Courses courses={this.state.courses} />} />
+            <Route exact path="/courses" render={ () => <Courses api={this.api} />} />
             <Route path="/courses/create" render={ () => <CreateCourse api={this.api} />} />
             <Route exact path="/courses/:id" render={ () => <CourseDetail api={this.api} /> } />
-            <Route path="/courses/:id/update" render={ () => <UpdateCourse api={this.api} />} />
+            <Route path="/courses/:id/update" render={ () => <UpdateCourse api={this.api} update={this.updateCourse} />} />
+            <Route path="/signin" render={() => <UserSignIn /> } />
+            <Route path="/signup" render={() => <UserSignUp /> } />
+            <Route path="/signout" render={() => <UserSignOut /> } />
           </Switch>
         </div>
       </BrowserRouter>

@@ -22,25 +22,18 @@ class UpdateCourse extends Component {
   change(event) {
     const name = event.target.name;
     const value = event.target.value;
-    console.log(name);
-    console.log(value);
+
     this.setState(() => {
       return {
         [name]: value
       };
     });
-    console.log(this.state);
-  }
-
-  async updateCourse(data) {
-    const response = await this.props.api(`/courses/${this.state.courseId}`, 'PUT', data);
-    console.log(response);
   }
 
   submit() {
     const data = this.state;
     console.log(data);
-    this.updateCourse(data);
+    this.props.update(this.state.courseId, data);
     this.props.history.push(`/courses/${this.state.courseId}`);
   }
 
