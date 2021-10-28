@@ -12,7 +12,7 @@ export default class Header extends React.PureComponent {
             { authUser ? (
               <React.Fragment>
                 <ul className="header--signedin">
-                  <li>Welcome, Joe Smith!</li>
+                  <li>Welcome, {authUser.firstName} {authUser.lastName}!</li>
                   <li><Link to="/signout">Sign Out</Link></li>
                 </ul>
               </React.Fragment>

@@ -36,9 +36,9 @@ class CreateCourse extends Component {
   } 
 
   render() {
-    
+    console.log(this.props);
     return (
-      <div class="wrap">
+      <div className="wrap">
         <h2>Create Course</h2>
         <Form 
           cancel={this.cancel}

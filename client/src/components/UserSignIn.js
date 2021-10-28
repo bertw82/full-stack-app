@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import Form from './Form';
+import { withRouter } from 'react-router';
 
-export default class UserSignIn extends Component {
+class UserSignIn extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
+      emailAddress: '',
       password: '',
       errors: []
     }
@@ -26,7 +27,24 @@ export default class UserSignIn extends Component {
   }
 
   submit() {
+    const { emailAddress, password } = this.state;
 
+    this.props.signIn(emailAddress, password)
+      .then((user) => {
+        if (user === null) {
+          this.setState(() => {
+            return { errors: ['Sign-in was unsuccessful'] }
+          });
+          console.log(this.state.errors);
+        } else {
+          console.log('sign in successful!');
+          this.props.history.push('/');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.props.history.push('/error')
+      })
   }
 
   cancel() {
@@ -35,7 +53,7 @@ export default class UserSignIn extends Component {
 
   render() {
     const {
-      email,
+      emailAddress,
       password,
       errors,
     } = this.state;
@@ -55,8 +73,9 @@ export default class UserSignIn extends Component {
                 id="emailAddress" 
                 name="emailAddress" 
                 type="email" 
-                value={email} 
+                value={emailAddress} 
                 onChange={this.change}
+                autoComplete="on"
                 />
               <label htmlFor="password">Password</label>
               <input 
@@ -64,13 +83,14 @@ export default class UserSignIn extends Component {
                 name="password" 
                 type="password" 
                 value={password}
-                onChange={this.change} />
+                onChange={this.change}
+                autoComplete="on" />
             </React.Fragment>
           )}
         />
       </div>
     );
-
   }
-
 }
+
+export default withRouter(UserSignIn);

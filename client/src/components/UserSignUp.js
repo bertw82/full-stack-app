@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import Form from './Form';
+import { withRouter } from 'react-router';
 
-export default class UserSignUp extends Component {
+class UserSignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
       firstName: '',
       lastName: '',
-      email: '',
+      emailAddress: '',
       password: '',
       errors: [],
     }
@@ -28,7 +29,33 @@ export default class UserSignUp extends Component {
   }
 
   submit() {
+    const {
+      firstName,
+      lastName,
+      emailAddress,
+      password
+    } = this.state;
 
+    // Create user
+    const user = {
+      firstName,
+      lastName,
+      emailAddress,
+      password
+    }
+
+    this.props.createUser(user)
+      .then(errors => {
+        if (errors.length) {
+          this.setState({ errors });
+        } else {
+          this.props.signIn(emailAddress, password);
+          console.log('signed in!');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
 
   cancel() {
@@ -39,7 +66,7 @@ export default class UserSignUp extends Component {
     const {
       firstName,
       lastName,
-      email,
+      emailAddress,
       password,
       errors,
     } = this.state;
@@ -75,7 +102,7 @@ export default class UserSignUp extends Component {
                 id="emailAddress" 
                 name="emailAddress" 
                 type="email" 
-                value={email} 
+                value={emailAddress} 
                 onChange={this.change}
                 />
               <label htmlFor="password">Password</label>
@@ -92,3 +119,5 @@ export default class UserSignUp extends Component {
     );
   } 
 }
+
+export default withRouter(UserSignUp);

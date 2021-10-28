@@ -29,8 +29,6 @@ class Courses extends Component {
     }
   }
 
-        
-
   render() {
     const list = this.state.courses.map(course => {
       return  <div key={course.id} className="course--link course--module">

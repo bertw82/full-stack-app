@@ -44,6 +44,7 @@ class UpdateCourse extends Component {
   render() {
     // const errors = this.state.errors;
     //  console.log(this.state.materialsNeeded);
+    console.log(this.props);
     return (
         <div className="wrap">
           <h2>Update Course</h2>
