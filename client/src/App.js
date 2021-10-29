@@ -19,7 +19,8 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      authenticatedUser: null
+      authenticatedUser: null,
+      password: ''
     }
     this.api = this.api.bind(this);
     this.getUser = this.getUser.bind(this);
@@ -68,11 +69,17 @@ class App extends Component {
   }
 
   async createCourse(course, emailAddress, password) {
+    console.log(course);
+    console.log(emailAddress);
+    console.log(password);
     const response = await this.api('/courses', 'POST', course, true, {emailAddress, password});
-    if (response.status === 201) {
-      return [];
+    console.log(response);
+    if (response.status === 400) {
+      return response.json().then(data => {
+        return data.errors;
+      });
     } else {
-      throw new Error()
+      throw new Error();
     }
   }
 
@@ -111,6 +118,7 @@ class App extends Component {
       this.setState(() => {
         return {
           authenticatedUser: user,
+          password: password
         };
       });
     }
@@ -122,6 +130,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.state.authenticatedUser);
     return (
       <BrowserRouter>
         <div>
@@ -137,6 +146,7 @@ class App extends Component {
             <PrivateRoute 
               path="/courses/create" 
               authenticatedUser={this.state.authenticatedUser} 
+              password={this.state.password}
               api={this.api}
               createCourse={this.createCourse}
               component={CreateCourse} />

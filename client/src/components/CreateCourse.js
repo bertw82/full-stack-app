@@ -33,10 +33,11 @@ class CreateCourse extends Component {
       materialsNeeded
     };
 
-    this.props.createCourse(course, authUser.emailAddress, authUser.password)
+    this.props.createCourse(course, authUser.emailAddress, this.props.password)
       .then( errors => {
         if (errors.length) {
           this.setState({ errors });
+          console.log(this.state.errors)
         } else {
           console.log('success!');
           this.props.history.push('/courses');
