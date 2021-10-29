@@ -5,10 +5,11 @@ class CreateCourse extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      courseTitle : '',
-      courseDescription : '',
+      title : '',
+      description : '',
       materialsNeeded : '',
-      estimatedTime : ''
+      estimatedTime : '',
+      errors: []
     }
     this.change = this.change.bind(this);
     this.submit = this.submit.bind(this);
@@ -17,7 +18,30 @@ class CreateCourse extends Component {
  
 
   submit() {
+    const authUser = this.props.authenticatedUser;
+    const {
+      title,
+      description,
+      estimatedTime,
+      materialsNeeded
+    } = this.state
 
+    const course = {
+      title,
+      description,
+      estimatedTime,
+      materialsNeeded
+    };
+
+    this.props.createCourse(course, authUser.emailAddress, authUser.password)
+      .then( errors => {
+        if (errors.length) {
+          this.setState({ errors });
+        } else {
+          console.log('success!');
+          this.props.history.push('/courses');
+        }
+      })
   }
 
   cancel() {
@@ -36,38 +60,38 @@ class CreateCourse extends Component {
   } 
 
   render() {
-    console.log(this.props);
+    // console.log(this.props);
     return (
       <div className="wrap">
         <h2>Create Course</h2>
         <Form 
           cancel={this.cancel}
-            // errors={errors}
+            errors={this.state.errors}
             submit={this.submit}
             submitButtonText="Create Course"
             elements={ () => (
               <React.Fragment>
                 <div className="main--flex">
                   <div>
-                  <label htmlFor="courseTitle">Course Title</label>
+                  <label htmlFor="title">Course Title</label>
                     <input 
-                      id="courseTitle" 
-                      name="courseTitle" 
+                      id="title" 
+                      name="title" 
                       type="text" 
                       // value={courseTitle}
-                      value={this.state.courseTitle}
+                      value={this.state.title}
                       onChange={this.change} />
                       
                     <p>By </p>
 
-                    <label htmlFor="courseDescription">Course Description</label>
+                    <label htmlFor="description">Course Description</label>
                     <textarea 
-                      id="courseDescription" 
-                      name="courseDescription"
+                      id="description" 
+                      name="description"
                       // value={courseDescription}
-                      value={this.state.courseDescription}
+                      value={this.state.description}
                       onChange={this.change}
-                    ></textarea>
+                    />
                   </div>
                   <div>
                     <label htmlFor="estimatedTime">Estimated Time</label>

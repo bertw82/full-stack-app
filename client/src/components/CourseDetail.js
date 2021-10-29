@@ -61,14 +61,13 @@ class CourseDetail extends Component {
 
   render() {
 
-    // console.log(this.state);
+    console.log(this.props.authenticatedUser);
+    console.log(this.state.courseId);
     return (
-     
-      <>
+     <div>
       {
-        (this.state.course) ?
-        <div>
-        <div className="actions--bar">
+        (this.props.authenticatedUser.id === this.state.courseId) 
+        ? <div className="actions--bar">
           <ul className="wrap">
             <li className="button"><Link className="button-link" to={{
               pathname: `/courses/${this.state.courseId}/update`,
@@ -82,11 +81,18 @@ class CourseDetail extends Component {
                 firstName: this.state.firstName,
                 lastName: this.state.lastName,
               }
-              }}>Update Course</Link></li>
+            }}>Update Course</Link></li>
             <li className="button"><Link className="button-link" to="/courses">Delete Course</Link></li>
+      
             <li className="button button-secondary"><Link to="/courses">Return to List</Link></li>
           </ul>
         </div>
+        : <div className="actions--bar">
+            <ul className="wrap">
+              <li className="button button-secondary"><Link to="/courses">Return to List</Link></li>
+            </ul>
+          </div>
+      }
               
         <div className="wrap">
           <h2>Course Detail</h2>
@@ -110,11 +116,7 @@ class CourseDetail extends Component {
             </div>
           </form>
         </div>
-        </div>
-        : <p>I'm sorry...</p>
-      }
-      </>
-     
+     </div>
     );
   }
 }

@@ -24,8 +24,8 @@ class App extends Component {
     this.api = this.api.bind(this);
     this.getUser = this.getUser.bind(this);
     this.createUser = this.createUser.bind(this);
-    // this.updateCourse = this.updateCourse.bind(this);
-    // this.deleteCourse = this.deleteCourse.bind(this);
+    this.updateCourse = this.updateCourse.bind(this);
+    this.deleteCourse = this.deleteCourse.bind(this);
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
   }
@@ -52,18 +52,33 @@ class App extends Component {
     return fetch(url, options);
   }
 
-  async updateCourse(path, data) {
-    const response = await this.api(`/courses/${path}`, 'PUT', data);
+  async updateCourse(path, data, emailAddress, password) {
+    const response = await this.api(`/courses/${path}`, 'PUT', data, true, { emailAddress, password});
     console.log(response);
+    if (response.status === 204) {
+      return [];
+    } else if (response.status === 401) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    } 
+    else {
+      throw new Error();
+    }
   }
 
-  // async CreateCourse() {
+  async createCourse(course, emailAddress, password) {
+    const response = await this.api('/courses', 'POST', course, true, {emailAddress, password});
+    if (response.status === 201) {
+      return [];
+    } else {
+      throw new Error()
+    }
+  }
 
-  // }
+  async deleteCourse() {
 
-  // async deleteCourse() {
-
-  // }
+  }
 
   async getUser(emailAddress, password) {
     const response = await this.api(`/users`, 'GET', null, true, { emailAddress, password });
@@ -123,10 +138,15 @@ class App extends Component {
               path="/courses/create" 
               authenticatedUser={this.state.authenticatedUser} 
               api={this.api}
+              createCourse={this.createCourse}
               component={CreateCourse} />
             <Route 
               exact path="/courses/:id" 
-              render={ () => <CourseDetail api={this.api} /> } />
+              render={ () => 
+                <CourseDetail 
+                  api={this.api}
+                  authenticatedUser={this.state.authenticatedUser}
+                /> } />
             <PrivateRoute 
               path="/courses/:id/update" 
               authenticatedUser={this.state.authenticatedUser}

@@ -11,7 +11,7 @@ class UpdateCourse extends Component {
       courseDescription: this.props.location.state.courseDescription,
       materialsNeeded: this.props.location.state.materialsNeeded,
       estimatedTime: this.props.location.state.estimatedTime,
-      // errors: []
+      errors: []
    
     }
     this.change = this.change.bind(this);
@@ -33,8 +33,15 @@ class UpdateCourse extends Component {
   submit() {
     const data = this.state;
     console.log(data);
-    this.props.update(this.state.courseId, data);
-    this.props.history.push(`/courses/${this.state.courseId}`);
+    this.props.update(this.state.courseId, data, this.props.authenticatedUser.emailAddress, this.props.authenticatedUser.password)
+      .then( errors => {
+        if (errors.length) {
+          this.setState({ errors });
+        } else {
+          console.log('success!');
+          this.props.history.push(`/courses/${this.state.courseId}`);
+        }
+      })    
   }
 
   cancel() {
@@ -50,7 +57,7 @@ class UpdateCourse extends Component {
           <h2>Update Course</h2>
           <Form
             cancel={this.cancel}
-            // errors={errors}
+            errors={this.state.errors}
             submit={this.submit}
             submitButtonText="Update Course"
             elements={ () => (
@@ -62,7 +69,6 @@ class UpdateCourse extends Component {
                       id="courseTitle" 
                       name="courseTitle" 
                       type="text" 
-                      // value={courseTitle}
                       value={this.state.courseTitle}
                       onChange={this.change} />
                       
@@ -72,7 +78,6 @@ class UpdateCourse extends Component {
                     <textarea 
                       id="courseDescription" 
                       name="courseDescription"
-                      // value={courseDescription}
                       value={this.state.courseDescription}
                       onChange={this.change}
                     ></textarea>
@@ -83,7 +88,6 @@ class UpdateCourse extends Component {
                       id="estimatedTime" 
                       name="estimatedTime" 
                       type="text" 
-                      // value={estimatedTime}
                       value={this.state.estimatedTime}
                       onChange={this.change} />
 
@@ -91,7 +95,6 @@ class UpdateCourse extends Component {
                     <textarea 
                       id="materialsNeeded" 
                       name="materialsNeeded"
-                      // value={materialsNeeded}
                       value={this.state.materialsNeeded}
                       onChange={this.change}
                     />
