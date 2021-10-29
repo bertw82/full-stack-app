@@ -62,8 +62,11 @@ class App extends Component {
       return response.json().then(data => {
         return data.errors;
       });
-    } 
-    else {
+    } else if (response.status === 400) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    } else {
       throw new Error();
     }
   }
@@ -160,6 +163,7 @@ class App extends Component {
             <PrivateRoute 
               path="/courses/:id/update" 
               authenticatedUser={this.state.authenticatedUser}
+              password={this.state.password}
               api={this.api}
               update={this.updateCourse}
               component={UpdateCourse} />

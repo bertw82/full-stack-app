@@ -7,8 +7,8 @@ class UpdateCourse extends Component {
     super(props);
     this.state = {
       courseId: this.props.location.state.courseId,
-      courseTitle: this.props.location.state.courseTitle,
-      courseDescription: this.props.location.state.courseDescription,
+      title: this.props.location.state.courseTitle,
+      description: this.props.location.state.courseDescription,
       materialsNeeded: this.props.location.state.materialsNeeded,
       estimatedTime: this.props.location.state.estimatedTime,
       errors: []
@@ -33,10 +33,11 @@ class UpdateCourse extends Component {
   submit() {
     const data = this.state;
     console.log(data);
-    this.props.update(this.state.courseId, data, this.props.authenticatedUser.emailAddress, this.props.authenticatedUser.password)
+    this.props.update(this.state.courseId, data, this.props.authenticatedUser.emailAddress, this.props.password)
       .then( errors => {
         if (errors.length) {
           this.setState({ errors });
+          console.log(this.state.errors);
         } else {
           console.log('success!');
           this.props.history.push(`/courses/${this.state.courseId}`);
@@ -51,34 +52,42 @@ class UpdateCourse extends Component {
   render() {
     // const errors = this.state.errors;
     //  console.log(this.state.materialsNeeded);
-    console.log(this.props);
+    // console.log(this.props);
+    const {
+      title,
+      description,
+      estimatedTime,
+      materialsNeeded,
+      errors
+    } = this.state;
+
     return (
         <div className="wrap">
           <h2>Update Course</h2>
           <Form
             cancel={this.cancel}
-            errors={this.state.errors}
+            errors={errors}
             submit={this.submit}
             submitButtonText="Update Course"
             elements={ () => (
               <React.Fragment>
                 <div className="main--flex">
                   <div>
-                    <label htmlFor="courseTitle">Course Title</label>
+                    <label htmlFor="title">Course Title</label>
                     <input 
-                      id="courseTitle" 
-                      name="courseTitle" 
+                      id="title" 
+                      name="title" 
                       type="text" 
-                      value={this.state.courseTitle}
+                      value={title}
                       onChange={this.change} />
                       
                     <p>By { this.props.location.state.course.user.firstName + ' ' + this.props.location.state.course.user.lastName }</p>
 
-                    <label htmlFor="courseDescription">Course Description</label>
+                    <label htmlFor="description">Course Description</label>
                     <textarea 
-                      id="courseDescription" 
-                      name="courseDescription"
-                      value={this.state.courseDescription}
+                      id="description" 
+                      name="description"
+                      value={description}
                       onChange={this.change}
                     ></textarea>
                   </div>
@@ -88,14 +97,14 @@ class UpdateCourse extends Component {
                       id="estimatedTime" 
                       name="estimatedTime" 
                       type="text" 
-                      value={this.state.estimatedTime}
+                      value={estimatedTime}
                       onChange={this.change} />
 
                     <label htmlFor="materialsNeeded">Materials Needed</label>
                     <textarea 
                       id="materialsNeeded" 
                       name="materialsNeeded"
-                      value={this.state.materialsNeeded}
+                      value={materialsNeeded}
                       onChange={this.change}
                     />
                   </div>
