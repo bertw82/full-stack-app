@@ -7,26 +7,19 @@ class Courses extends Component {
     this.state = {
       courses: []
     }
-    this.getCourses = this.getCourses.bind(this);
   }
 
   componentDidMount() {
-    this.getCourses();
-  }
-
-  async getCourses() {
-    const response = await this.props.api('/courses');
-    if (response.status === 200) {
-      return response.json().then(data => {
+    this.props.getCourses()
+      .then(data => {
         this.setState({
           courses: data
         })
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.history.push('/notfound');
       });
-    } else if (response.status === 401) {
-      console.log('Error 401');
-    } else {
-      throw new Error();
-    }
   }
 
   render() {

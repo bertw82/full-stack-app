@@ -28,17 +28,17 @@ class UserSignIn extends Component {
 
   submit() {
     const { emailAddress, password } = this.state;
+    const { from } = this.props.location.state || { from: { pathname: '/courses' } };
 
     this.props.signIn(emailAddress, password)
       .then((user) => {
         if (user === null) {
+          console.log(user);
           this.setState(() => {
             return { errors: ['Sign-in was unsuccessful'] }
           });
-          console.log(this.state.errors);
         } else {
-          console.log('sign in successful!');
-          this.props.history.push('/');
+          this.props.history.push(from);
         }
       })
       .catch((error) => {

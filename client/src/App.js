@@ -1,36 +1,46 @@
 import React, { Component } from 'react';
-import Header from './components/Header';
+import Cookies from 'js-cookie';
 import {
   BrowserRouter,
   Switch,
   Route,
   Redirect
 } from 'react-router-dom';
+
+import Header from './components/Header';
 import Courses from './components/Courses';
 import CourseDetail from './components/CourseDetail';
 import UpdateCourse from './components/UpdateCourse';
 import CreateCourse from './components/CreateCourse';
+import DeleteCourse from './components/DeleteCourse';
 import UserSignUp from './components/UserSignUp';
 import UserSignIn from './components/UserSignIn';
 import UserSignOut from './components/UserSignOut';
 import PrivateRoute from './components/PrivateRoute';
+import NotFound from './components/NotFound';
+import UnhandledError from './components/UnhandledError';
+import Forbidden from './components/Forbidden';
 
 class App extends Component {
   constructor() {
     super();
+    this.cookie = Cookies.get('authenticatedUser');
     this.state = {
-      authenticatedUser: null,
+      authenticatedUser: this.cookie ? JSON.parse(this.cookie) : null,
       password: ''
     }
     this.api = this.api.bind(this);
     this.getUser = this.getUser.bind(this);
     this.createUser = this.createUser.bind(this);
+    this.getCourses = this.getCourses.bind(this);
+    this.getCourse = this.getCourse.bind(this);
     this.updateCourse = this.updateCourse.bind(this);
     this.deleteCourse = this.deleteCourse.bind(this);
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
   }
 
+  // API call function
   api(path, method = 'GET', body = null, requiresAuth = false, credentials = null) {
     const url = 'http://localhost:5000/api' + path;
   
@@ -49,10 +59,38 @@ class App extends Component {
       const encodedCredentials = btoa(`${credentials.emailAddress}:${credentials.password}`);
       options.headers['Authorization'] = `Basic ${encodedCredentials}`;
     }
-
     return fetch(url, options);
   }
 
+  // Get all courses
+  async getCourses() {
+    const response = await this.api('/courses');
+    if (response.status === 200) {
+      return response.json().then(data => data);
+    } else if (response.status === 404) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    } else {
+      throw new Error();
+    }
+  }
+
+  // Get a specific course
+  async getCourse(courseId) {
+    const response = await this.api('/courses/' + courseId);
+    if (response.status === 200) {
+      return response.json().then(data => data);
+    } else if (response.status === 404) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    } else {
+      throw new Error();
+    }
+  }
+
+  // update a specific course
   async updateCourse(path, data, emailAddress, password) {
     const response = await this.api(`/courses/${path}`, 'PUT', data, true, { emailAddress, password});
     console.log(response);
@@ -71,13 +109,16 @@ class App extends Component {
     }
   }
 
+  // create a new course
   async createCourse(course, emailAddress, password) {
-    console.log(course);
-    console.log(emailAddress);
-    console.log(password);
     const response = await this.api('/courses', 'POST', course, true, {emailAddress, password});
-    console.log(response);
-    if (response.status === 400) {
+    if (response.status === 201) {
+      return [];
+    } else if (response.status === 400) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    } else if (response.status === 401) {
       return response.json().then(data => {
         return data.errors;
       });
@@ -86,10 +127,25 @@ class App extends Component {
     }
   }
 
-  async deleteCourse() {
-
+  // delete a course
+  async deleteCourse(path, emailAddress, password) {
+    const response = await this.api(`/courses/${path}`, 'DELETE', null, true, { emailAddress, password });
+    if (response.status === 204) {
+      console.log(response);
+    } else if (response.status === 403) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    } else if (response.status === 404) {
+      return response.json().then(data => {
+        return data.errors;
+      });
+    } else {
+      throw new Error();
+    }
   }
 
+  // get a user
   async getUser(emailAddress, password) {
     const response = await this.api(`/users`, 'GET', null, true, { emailAddress, password });
     if (response.status === 200) {
@@ -97,10 +153,11 @@ class App extends Component {
     } else if (response.status === 401) {
       return null;
     } else {
-      throw new Error()
+      throw new Error();
     }
   }
 
+  // create a user
   async createUser(user) {
     const response = await this.api('/users', 'POST', user);
     if (response.status === 201) {
@@ -114,9 +171,9 @@ class App extends Component {
     }
   }
 
+  // sign in a user
   async signIn(emailAddress, password) {
     const user = await this.getUser(emailAddress, password);
-    console.log(user);
     if (user !== null) {
       this.setState(() => {
         return {
@@ -124,16 +181,21 @@ class App extends Component {
           password: password
         };
       });
+      Cookies.set('authenticatedUser', JSON.stringify(user), { expires: 1 })
     }
     return user;
   }
 
+  // sign out a user
   signOut() {
-    this.setState({ authenticatedUser: null });
+    this.setState({ 
+      authenticatedUser: null,
+      password: '', 
+    });
+    Cookies.remove('authenticatedUser');
   }
 
   render() {
-    console.log(this.state.authenticatedUser);
     return (
       <BrowserRouter>
         <div>
@@ -145,7 +207,11 @@ class App extends Component {
               render={ () => <Redirect to="/courses" />} />
             <Route 
               exact path="/courses" 
-              render={ () => <Courses api={this.api} />} />
+              render={ () => 
+                <Courses 
+                  api={this.api} 
+                  getCourses={this.getCourses}
+                />} />
             <PrivateRoute 
               path="/courses/create" 
               authenticatedUser={this.state.authenticatedUser} 
@@ -159,6 +225,7 @@ class App extends Component {
                 <CourseDetail 
                   api={this.api}
                   authenticatedUser={this.state.authenticatedUser}
+                  getCourse={this.getCourse}
                 /> } />
             <PrivateRoute 
               path="/courses/:id/update" 
@@ -166,7 +233,17 @@ class App extends Component {
               password={this.state.password}
               api={this.api}
               update={this.updateCourse}
+              getCourse={this.getCourse}
               component={UpdateCourse} />
+            <PrivateRoute 
+              path="/courses/:id/delete"
+              authenticatedUser={this.state.authenticatedUser}
+              password={this.state.password}
+              api={this.api}
+              getCourse={this.getCourse}
+              deleteCourse={this.deleteCourse}
+              component={DeleteCourse}
+            />
             <Route 
               path="/signin" 
               render={() => <UserSignIn signIn={this.signIn} /> } />
@@ -182,7 +259,15 @@ class App extends Component {
               render={() => <UserSignOut signOut={this.signOut} /> } />
             <Route 
               path="/error" 
-              render={ () => <h1>Error!</h1>} />
+              render={() => <UnhandledError />} />
+            <Route 
+              path="/notfound"
+              render={() => <NotFound />}
+            />
+            <Route 
+              path="/forbidden"
+              render={() => <Forbidden />}
+            />
           </Switch>
         </div>
       </BrowserRouter>

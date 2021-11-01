@@ -1,7 +1,7 @@
 import React from "react";
 import { Redirect } from "react-router";
 
-function UserSignOut(props) {
+export default function UserSignOut(props) {
     props.signOut();
 
   return (
@@ -9,4 +9,3 @@ function UserSignOut(props) {
   );
 }
  
-export default UserSignOut;

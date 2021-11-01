@@ -9,6 +9,7 @@ class CreateCourse extends Component {
       description : '',
       materialsNeeded : '',
       estimatedTime : '',
+      userId: props.authenticatedUser.id,
       errors: []
     }
     this.change = this.change.bind(this);
@@ -23,14 +24,16 @@ class CreateCourse extends Component {
       title,
       description,
       estimatedTime,
-      materialsNeeded
+      materialsNeeded,
+      userId
     } = this.state
 
     const course = {
       title,
       description,
       estimatedTime,
-      materialsNeeded
+      materialsNeeded,
+      userId
     };
 
     this.props.createCourse(course, authUser.emailAddress, this.props.password)

@@ -6,17 +6,59 @@ class UpdateCourse extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      courseId: this.props.location.state.courseId,
-      title: this.props.location.state.courseTitle,
-      description: this.props.location.state.courseDescription,
-      materialsNeeded: this.props.location.state.materialsNeeded,
-      estimatedTime: this.props.location.state.estimatedTime,
+      id: '',
+      userId: '',
+      title: '',
+      description: '',
+      materialsNeeded: '',
+      estimatedTime: '',
+      firstName: '',
+      lastName: '',
       errors: []
    
     }
     this.change = this.change.bind(this);
     this.submit = this.submit.bind(this);
     this.cancel = this.cancel.bind(this);
+    this.renderNull = this.renderNull.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.getCourse(this.props.location.state.courseId)
+      .then( data => {
+        this.setState({
+          userId: data.userId,
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          materialsNeeded: data.materialsNeeded,
+          estimatedTime: data.estimatedTime,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName
+        })
+      } 
+    )
+    .catch((err) => {
+      console.log(err);
+      this.props.history.push('/notfound');
+    });
+  }
+
+  componentDidUpdate() {
+    this.renderNull();
+  }
+
+  renderNull() {
+    if (this.state.materialsNeeded === null) {
+      this.setState({
+        materialsNeeded: '',
+      });
+    }
+    if (this.state.estimatedTime === null ) {
+      this.setState({
+        estimatedTime: '',
+      });
+    }
   }
 
   change(event) {
@@ -32,15 +74,14 @@ class UpdateCourse extends Component {
 
   submit() {
     const data = this.state;
-    console.log(data);
-    this.props.update(this.state.courseId, data, this.props.authenticatedUser.emailAddress, this.props.password)
+    this.props.update(this.state.id, data, this.props.authenticatedUser.emailAddress, this.props.password)
       .then( errors => {
         if (errors.length) {
           this.setState({ errors });
           console.log(this.state.errors);
         } else {
           console.log('success!');
-          this.props.history.push(`/courses/${this.state.courseId}`);
+          this.props.history.push(`/courses/${this.state.id}`);
         }
       })    
   }
@@ -50,9 +91,7 @@ class UpdateCourse extends Component {
   }
 
   render() {
-    // const errors = this.state.errors;
-    //  console.log(this.state.materialsNeeded);
-    // console.log(this.props);
+
     const {
       title,
       description,
@@ -81,7 +120,7 @@ class UpdateCourse extends Component {
                       value={title}
                       onChange={this.change} />
                       
-                    <p>By { this.props.location.state.course.user.firstName + ' ' + this.props.location.state.course.user.lastName }</p>
+                    <p>By { this.state.firstName + ' ' + this.state.lastName }</p>
 
                     <label htmlFor="description">Course Description</label>
                     <textarea 

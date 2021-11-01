@@ -1,9 +1,10 @@
 import React from 'react';
 
-const Form = props => {
+export default function Form(props) {
+  
   const {
     cancel,
-    // errors,
+    errors,
     submit,
     submitButtonText,
     elements,
@@ -21,7 +22,7 @@ const Form = props => {
 
   return (
     <div>
-      {/* <ErrorsDisplay error={errors} /> */}
+      <ErrorsDisplay errors={errors} />
       <form onSubmit={handleSubmit}>
         {elements()}
         <button className="button" type="submit">{submitButtonText}</button>
@@ -32,25 +33,21 @@ const Form = props => {
 
 } 
 
-// function ErrorsDisplay({ errors }) {
-//   let errorsDisplay = null;
+function ErrorsDisplay({ errors }) {
+  let errorsDisplay = null;
 
-//   if (errors.length) {
-//     errorsDisplay = (
-//       <>
-//         <div class="validation--errors">
-//           <h3>Validation Errors</h3>
-//           <ul>
-//               {/* <li>Please provide a value for "Title"</li>
-//               <li>Please provide a value for "Description"</li> */}
-//               { errors.map((error, i) => <li key={i}>{error}</li>)}
-//           </ul>
-//         </div>
-//       </>
-//     );
-//   }
+  if (errors.length) {
+    errorsDisplay = (
+      <>
+        <div className="validation--errors">
+          <h3>Validation Errors</h3>
+          <ul>
+            { errors.map((error, i) => <li key={i}>{error}</li>)}
+          </ul>
+        </div>
+      </>
+    );
+  }
 
-//   return errorsDisplay;
-// }
-
-export default Form;
+  return errorsDisplay;
+}
