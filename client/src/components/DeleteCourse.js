@@ -14,7 +14,7 @@ class DeleteCourse extends Component {
   }
 
   componentDidMount() {
-    this.props.getCourse(this.props.location.state.courseId)
+    this.props.getCourse(this.props.match.params.id)
       .then( data => {
         this.setState({
           id: data.id,
@@ -30,7 +30,7 @@ class DeleteCourse extends Component {
   submit() {
     this.props.deleteCourse(this.state.id, this.props.authenticatedUser.emailAddress, this.props.password)
       .then(response => {
-        console.log(response);
+        // console.log(response);
         if (response.status === 204) {
           this.props.history.push('/courses')
         } else if (response.status === 403) {
@@ -40,6 +40,10 @@ class DeleteCourse extends Component {
         } else if (response.status === 500) {
           this.props.history.push('/error');
         }
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.history.push('/error');
       })
   }
 

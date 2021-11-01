@@ -24,10 +24,11 @@ import Forbidden from './components/Forbidden';
 class App extends Component {
   constructor() {
     super();
-    this.cookie = Cookies.get('authenticatedUser');
+    this.userCookie = Cookies.get('authenticatedUser');
+    this.passwordCookie = Cookies.get('password')
     this.state = {
-      authenticatedUser: this.cookie ? JSON.parse(this.cookie) : null,
-      password: ''
+      authenticatedUser: this.userCookie ? JSON.parse(this.userCookie) : null,
+      password: this.passwordCookie ? JSON.parse(this.passwordCookie) : ''
     }
     this.api = this.api.bind(this);
     this.getUser = this.getUser.bind(this);
@@ -114,16 +115,10 @@ class App extends Component {
     const response = await this.api('/courses', 'POST', course, true, {emailAddress, password});
     if (response.status === 201) {
       return [];
-    } else if (response.status === 400) {
-      return response.json().then(data => {
-        return data.errors;
-      });
-    } else if (response.status === 401) {
-      return response.json().then(data => {
-        return data.errors;
-      });
     } else {
-      throw new Error();
+      return response.json().then(data => {
+        return data.errors;
+      });
     }
   }
 
@@ -131,15 +126,7 @@ class App extends Component {
   async deleteCourse(path, emailAddress, password) {
     const response = await this.api(`/courses/${path}`, 'DELETE', null, true, { emailAddress, password });
     if (response.status === 204) {
-      console.log(response);
-    } else if (response.status === 403) {
-      return response.json().then(data => {
-        return data.errors;
-      });
-    } else if (response.status === 404) {
-      return response.json().then(data => {
-        return data.errors;
-      });
+      return response;
     } else {
       throw new Error();
     }
@@ -178,10 +165,11 @@ class App extends Component {
       this.setState(() => {
         return {
           authenticatedUser: user,
-          password: password
+          password
         };
       });
-      Cookies.set('authenticatedUser', JSON.stringify(user), { expires: 1 })
+      Cookies.set('authenticatedUser', JSON.stringify(user), { expires: 1 });
+      Cookies.set('password', JSON.stringify(password), { expires: 1 });
     }
     return user;
   }

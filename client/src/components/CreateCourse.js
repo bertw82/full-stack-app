@@ -20,12 +20,14 @@ class CreateCourse extends Component {
 
   submit() {
     const authUser = this.props.authenticatedUser;
+    console.log(authUser);
+    console.log(this.props.password);
     const {
       title,
       description,
       estimatedTime,
       materialsNeeded,
-      userId
+      userId,
     } = this.state
 
     const course = {
@@ -40,7 +42,6 @@ class CreateCourse extends Component {
       .then( errors => {
         if (errors.length) {
           this.setState({ errors });
-          console.log(this.state.errors)
         } else {
           console.log('success!');
           this.props.history.push('/courses');

@@ -48,15 +48,15 @@ class CourseDetail extends Component {
           <ul className="wrap">
             <li className="button"><Link className="button-link" to={{
               pathname: `/courses/${courseId}/update`,
-              state: {
-                courseId: courseId,
-              }
+              // state: {
+              //   courseId: courseId,
+              // }
             }}>Update Course</Link></li>
             <li className="button"><Link className="button-link" to={{
               pathname: `/courses/${courseId}/delete`,
-              state: {
-                courseId: courseId,
-              }
+              // state: {
+              //   courseId: courseId,
+              // }
             }}>Delete Course</Link></li>
       
             <li className="button button-secondary"><Link to="/courses">Return to List</Link></li>
