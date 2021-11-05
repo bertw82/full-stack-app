@@ -163,6 +163,9 @@ class UpdateCourse extends Component {
   }
 
   render() {
+    // console.log(this.state);
+    // console.log(this.props.authenticatedUser);
+    // console.log(this.props.match.params.id);
     return (
       <>
       {

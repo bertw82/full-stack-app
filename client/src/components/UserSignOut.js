@@ -8,4 +8,3 @@ export default function UserSignOut(props) {
     <Redirect to="/" />
   );
 }
- 

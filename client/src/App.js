@@ -184,6 +184,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.state.authenticatedUser);
     return (
       <BrowserRouter>
         <div>
@@ -244,7 +245,10 @@ class App extends Component {
               } />
             <Route 
               path="/signout" 
-              render={() => <UserSignOut signOut={this.signOut} /> } />
+              render={() => 
+                <UserSignOut 
+                  signOut={this.signOut} 
+                /> } />
             <Route 
               path="/error" 
               render={() => <UnhandledError />} />

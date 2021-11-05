@@ -20,8 +20,6 @@ class CreateCourse extends Component {
 
   submit() {
     const authUser = this.props.authenticatedUser;
-    console.log(authUser);
-    console.log(this.props.password);
     const {
       title,
       description,
@@ -65,7 +63,7 @@ class CreateCourse extends Component {
   } 
 
   render() {
-    // console.log(this.props);
+    const user = this.props.authenticatedUser.firstName + ' ' + this.props.authenticatedUser.lastName;
     return (
       <div className="wrap">
         <h2>Create Course</h2>
@@ -83,17 +81,15 @@ class CreateCourse extends Component {
                       id="title" 
                       name="title" 
                       type="text" 
-                      // value={courseTitle}
                       value={this.state.title}
                       onChange={this.change} />
                       
-                    <p>By </p>
+                    <p>By {user}</p>
 
                     <label htmlFor="description">Course Description</label>
                     <textarea 
                       id="description" 
                       name="description"
-                      // value={courseDescription}
                       value={this.state.description}
                       onChange={this.change}
                     />
@@ -104,15 +100,12 @@ class CreateCourse extends Component {
                       id="estimatedTime" 
                       name="estimatedTime" 
                       type="text" 
-                      // value={estimatedTime}
                       value={this.state.estimatedTime}
                       onChange={this.change} />
-
                     <label htmlFor="materialsNeeded">Materials Needed</label>
                     <textarea 
                       id="materialsNeeded" 
                       name="materialsNeeded"
-                      // value={materialsNeeded}
                       value={this.state.materialsNeeded}
                       onChange={this.change}
                     />

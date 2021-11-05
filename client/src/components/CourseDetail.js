@@ -21,18 +21,24 @@ class CourseDetail extends Component {
 
   componentDidMount() {
     this.props.getCourse(this.props.match.params.id)
-      .then(data => {
-        this.setState({
-          course: data,
-          userId: data.userId,
-          courseId: data.id,
-          title: data.title,
-          description: data.description,
-          materialsNeeded: data.materialsNeeded,
-          estimatedTime: data.estimatedTime,
-          firstName: data.user.firstName,
-          lastName: data.user.lastName
-        })
+      // .then(errors => {
+      //   if (errors.length) {
+      //     console.log(errors)
+      //   }
+      // })
+        .then(data => {
+          this.setState({
+            course: data,
+            userId: data.userId,
+            courseId: data.id,
+            title: data.title,
+            description: data.description,
+            materialsNeeded: data.materialsNeeded,
+            estimatedTime: data.estimatedTime,
+            firstName: data.user.firstName,
+            lastName: data.user.lastName
+          })
+        
       })
       .catch((err) => {
         console.log(err);
@@ -46,18 +52,8 @@ class CourseDetail extends Component {
       return (
         <div className="actions--bar">
           <ul className="wrap">
-            <li className="button"><Link className="button-link" to={{
-              pathname: `/courses/${courseId}/update`,
-              // state: {
-              //   courseId: courseId,
-              // }
-            }}>Update Course</Link></li>
-            <li className="button"><Link className="button-link" to={{
-              pathname: `/courses/${courseId}/delete`,
-              // state: {
-              //   courseId: courseId,
-              // }
-            }}>Delete Course</Link></li>
+            <li className="button"><Link to={`/courses/${courseId}/update`}>Update Course</Link></li>
+            <li className="button"><Link to={`/courses/${courseId}/delete`}>Delete Course</Link></li>
       
             <li className="button button-secondary"><Link to="/courses">Return to List</Link></li>
           </ul>
