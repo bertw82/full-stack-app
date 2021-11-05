@@ -51,6 +51,7 @@ class UserSignUp extends Component {
         } else {
           this.props.signIn(emailAddress, password);
           console.log('signed in!');
+          this.props.history.push('/courses');
         }
       })
       .catch((err) => {

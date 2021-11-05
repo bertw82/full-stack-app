@@ -33,10 +33,7 @@ class App extends Component {
     this.api = this.api.bind(this);
     this.getUser = this.getUser.bind(this);
     this.createUser = this.createUser.bind(this);
-    this.getCourses = this.getCourses.bind(this);
     this.getCourse = this.getCourse.bind(this);
-    this.updateCourse = this.updateCourse.bind(this);
-    this.deleteCourse = this.deleteCourse.bind(this);
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
   }
@@ -63,73 +60,10 @@ class App extends Component {
     return fetch(url, options);
   }
 
-  // Get all courses
-  async getCourses() {
-    const response = await this.api('/courses');
-    if (response.status === 200) {
-      return response.json().then(data => data);
-    } else if (response.status === 404) {
-      return response.json().then(data => {
-        return data.errors;
-      });
-    } else {
-      throw new Error();
-    }
-  }
-
   // Get a specific course
   async getCourse(courseId) {
     const response = await this.api('/courses/' + courseId);
-    if (response.status === 200) {
-      return response.json().then(data => data);
-    } else if (response.status === 404) {
-      return response.json().then(data => {
-        return data.errors;
-      });
-    } else {
-      throw new Error();
-    }
-  }
-
-  // update a specific course
-  async updateCourse(path, data, emailAddress, password) {
-    const response = await this.api(`/courses/${path}`, 'PUT', data, true, { emailAddress, password});
-    console.log(response);
-    if (response.status === 204) {
-      return [];
-    } else if (response.status === 401) {
-      return response.json().then(data => {
-        return data.errors;
-      });
-    } else if (response.status === 400) {
-      return response.json().then(data => {
-        return data.errors;
-      });
-    } else {
-      throw new Error();
-    }
-  }
-
-  // create a new course
-  async createCourse(course, emailAddress, password) {
-    const response = await this.api('/courses', 'POST', course, true, {emailAddress, password});
-    if (response.status === 201) {
-      return [];
-    } else {
-      return response.json().then(data => {
-        return data.errors;
-      });
-    }
-  }
-
-  // delete a course
-  async deleteCourse(path, emailAddress, password) {
-    const response = await this.api(`/courses/${path}`, 'DELETE', null, true, { emailAddress, password });
-    if (response.status === 204) {
-      return response;
-    } else {
-      throw new Error();
-    }
+    return response;
   }
 
   // get a user
@@ -139,6 +73,8 @@ class App extends Component {
       return response.json().then(data => data);
     } else if (response.status === 401) {
       return null;
+    } else if (response.status === 500) {
+      return <Redirect to="/error" />
     } else {
       throw new Error();
     }
@@ -153,6 +89,8 @@ class App extends Component {
       return response.json().then(data => {
         return data.errors;
       });
+    } else if (response.status === 500) {
+      return <Redirect to="/error" />
     } else {
       throw new Error();
     }
@@ -161,6 +99,7 @@ class App extends Component {
   // sign in a user
   async signIn(emailAddress, password) {
     const user = await this.getUser(emailAddress, password);
+    console.log(user);
     if (user !== null) {
       this.setState(() => {
         return {
@@ -184,7 +123,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.authenticatedUser);
     return (
       <BrowserRouter>
         <div>
@@ -199,14 +137,13 @@ class App extends Component {
               render={ () => 
                 <Courses 
                   api={this.api} 
-                  getCourses={this.getCourses}
+                  // getCourses={this.getCourses}
                 />} />
             <PrivateRoute 
               path="/courses/create" 
               authenticatedUser={this.state.authenticatedUser} 
               password={this.state.password}
               api={this.api}
-              createCourse={this.createCourse}
               component={CreateCourse} />
             <Route 
               exact path="/courses/:id" 
@@ -221,7 +158,6 @@ class App extends Component {
               authenticatedUser={this.state.authenticatedUser}
               password={this.state.password}
               api={this.api}
-              update={this.updateCourse}
               getCourse={this.getCourse}
               component={UpdateCourse} />
             <PrivateRoute 
@@ -230,7 +166,6 @@ class App extends Component {
               password={this.state.password}
               api={this.api}
               getCourse={this.getCourse}
-              deleteCourse={this.deleteCourse}
               component={DeleteCourse}
             />
             <Route 
@@ -260,6 +195,7 @@ class App extends Component {
               path="/forbidden"
               render={() => <Forbidden />}
             />
+             <Route component={NotFound} />
           </Switch>
         </div>
       </BrowserRouter>

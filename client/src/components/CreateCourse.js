@@ -15,8 +15,16 @@ class CreateCourse extends Component {
     this.change = this.change.bind(this);
     this.submit = this.submit.bind(this);
     this.cancel = this.cancel.bind(this);
+    this.createCourse = this.createCourse.bind(this);
   }
- 
+  
+
+  // create a new course
+  async createCourse(course, emailAddress, password) {
+    const response = await this.props.api('/courses', 'POST', course, true, {emailAddress, password});
+    return response;
+  }
+
 
   submit() {
     const authUser = this.props.authenticatedUser;
@@ -36,15 +44,22 @@ class CreateCourse extends Component {
       userId
     };
 
-    this.props.createCourse(course, authUser.emailAddress, this.props.password)
-      .then( errors => {
-        if (errors.length) {
-          this.setState({ errors });
-        } else {
-          console.log('success!');
+    this.createCourse(course, authUser.emailAddress, this.props.password)
+      .then(response => {
+        if (response.status === 201) {
           this.props.history.push('/courses');
+        } else if (response.status === 500) {
+          this.props.history.push('/error');
+        } else {
+          return response.json().then(data => {
+            this.setState({ errors: data.errors });
+          });
         }
-      })
+      }) 
+      .catch((err) => {
+        console.log(err);
+        this.props.history.push('/error');
+      });
   }
 
   cancel() {

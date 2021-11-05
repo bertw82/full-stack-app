@@ -59,6 +59,7 @@ class UserSignIn extends Component {
     } = this.state;
 
     return (
+      <>
       <div className="form--centered">
         <h2>Sign In</h2>
         <Form 
@@ -89,6 +90,7 @@ class UserSignIn extends Component {
           )}
         />
       </div>
+      </>
     );
   }
 }

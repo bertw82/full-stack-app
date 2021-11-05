@@ -23,28 +23,38 @@ class UpdateCourse extends Component {
     this.cancel = this.cancel.bind(this);
     this.renderNull = this.renderNull.bind(this);
     this.renderForm = this.renderForm.bind(this);
+    this.updateCourse = this.updateCourse.bind(this);
   }
 
   componentDidMount() {
     this.props.getCourse(this.props.match.params.id)
-      .then( data => {
-        this.setState({
-          userId: data.userId,
-          id: data.id,
-          title: data.title,
-          description: data.description,
-          materialsNeeded: data.materialsNeeded,
-          estimatedTime: data.estimatedTime,
-          firstName: data.user.firstName,
-          lastName: data.user.lastName,
-          loading: false
-        })
-      } 
-    )
-    .catch((err) => {
-      console.log(err);
-      this.props.history.push('/notfound');
-    });
+      .then(response => {
+        if (response.status === 404) {
+          this.props.history.push('/notfound');
+        } else if (response.status === 500) {
+          this.props.history.push('/error');
+        } else if (response.status === 200) {
+          return response.json().then(data => {
+            this.setState({
+              userId: data.userId,
+              id: data.id,
+              title: data.title,
+              description: data.description,
+              materialsNeeded: data.materialsNeeded,
+              estimatedTime: data.estimatedTime,
+              firstName: data.user.firstName,
+              lastName: data.user.lastName,
+              loading: false
+            })
+          })
+          .catch((err) => {
+            console.log(err);
+            this.props.history.push('/error');
+          });
+        } else {
+          throw new Error();
+        }
+      });
   }
 
   componentDidUpdate() {
@@ -75,18 +85,31 @@ class UpdateCourse extends Component {
     });
   }
 
+  async updateCourse(path, data, emailAddress, password) {
+    const response = await this.props.api(`/courses/${path}`, 'PUT', data, true, { emailAddress, password});
+    return response;
+  }
+
   submit() {
     const data = this.state;
-    this.props.update(this.state.id, data, this.props.authenticatedUser.emailAddress, this.props.password)
-      .then( errors => {
-        if (errors.length) {
-          this.setState({ errors });
-          console.log(this.state.errors);
-        } else {
-          console.log('success!');
+    this.updateCourse(this.state.id, data, this.props.authenticatedUser.emailAddress, this.props.password)
+      .then(response => {
+        if (response.status === 204) {
           this.props.history.push(`/courses/${this.state.id}`);
-        }
-      })    
+        } else if (response.status === 401 || response.status === 400) {
+          return response.json().then(data => {
+            this.setState({ errors: data.errors });
+          });
+        } else if (response.status === 500) {
+          this.props.history.push('/error');
+        } else {
+          throw new Error();
+        } 
+      })
+      .catch((err) => {
+        console.log(err);
+        this.props.history.push('/error');
+      })
   }
 
   cancel() {
@@ -163,9 +186,6 @@ class UpdateCourse extends Component {
   }
 
   render() {
-    // console.log(this.state);
-    // console.log(this.props.authenticatedUser);
-    // console.log(this.props.match.params.id);
     return (
       <>
       {

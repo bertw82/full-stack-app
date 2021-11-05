@@ -14,32 +14,44 @@ class DeleteCourse extends Component {
     this.submit = this.submit.bind(this);
     this.cancel = this.cancel.bind(this);
     this.renderForm = this.renderForm.bind(this);
+    this.deleteCourse = this.deleteCourse.bind(this);
   }
 
   componentDidMount() {
+    // get course to delete
     this.props.getCourse(this.props.match.params.id)
-      .then( data => {
-        this.setState({
-          userId: data.userId,
-          courseId: data.id,
-          loading: false
+    .then(response => {
+      if (response.status === 404) {
+        this.props.history.push('/notfound');
+      } else if (response.status === 500) {
+        this.props.history.push('/error');
+      } else if (response.status === 200) {
+        return response.json().then(data => {
+          this.setState({
+            userId: data.userId,
+            courseId: data.id,
+            loading: false
+          })
         })
-      } 
-    )
-    .catch((err) => {
-      console.log(err);
-      this.props.history.push('/notfound');
+        .catch((err) => {
+          console.log(err);
+          this.props.history.push('/error');
+        });
+      } else {
+        throw new Error();
+      }
     });
   }
 
-  // componentDidUpdate() {
-  //   this.renderForm();
-  // }
+  // delete a course
+  async deleteCourse(path, emailAddress, password) {
+    const response = await this.props.api(`/courses/${path}`, 'DELETE', null, true, { emailAddress, password });
+    return response;
+  }
 
   submit() {
-    this.props.deleteCourse(this.state.courseId, this.props.authenticatedUser.emailAddress, this.props.password)
+    this.deleteCourse(this.state.courseId, this.props.authenticatedUser.emailAddress, this.props.password)
       .then(response => {
-        // console.log(response);
         if (response.status === 204) {
           this.props.history.push('/courses')
         } else if (response.status === 403) {
@@ -48,6 +60,8 @@ class DeleteCourse extends Component {
           this.props.history.push('/forbidden');
         } else if (response.status === 500) {
           this.props.history.push('/error');
+        } else {
+          throw new Error();
         }
       })
       .catch((err) => {
@@ -61,6 +75,7 @@ class DeleteCourse extends Component {
   }
 
   renderForm() {
+    // render delete form if there is an authenticated user, otherwise redirect to "forbidden" component
     return (
       <>
       {
@@ -82,9 +97,6 @@ class DeleteCourse extends Component {
   }
 
   render() { 
-    // console.log(this.state);
-    // console.log(this.props.authenticatedUser);
-    // console.log(this.props.match.params.id);
     return (
       <>
       {

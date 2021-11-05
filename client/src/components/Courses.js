@@ -7,31 +7,44 @@ class Courses extends Component {
     this.state = {
       courses: []
     }
+    this.getCourses = this.getCourses.bind(this);
   }
 
   componentDidMount() {
-    this.props.getCourses()
-      .then(data => {
-        this.setState({
-          courses: data
-        })
-      })
-      .catch((err) => {
-        console.log(err);
-        this.props.history.push('/notfound');
-      });
+    this.getCourses();
   }
+
+  async getCourses() {
+    const response = await this.props.api('/courses');
+      if (response.status === 404) {
+        this.props.history.push('/notfound');
+      } else if (response.status === 500) {
+        this.props.history.push('/error')
+      } else if (response.status === 200) {
+        return response.json().then(data => {
+          this.setState({
+            courses: data
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      } else {
+        throw new Error();
+      }
+    }
+  
 
   render() {
     const list = this.state.courses.map(course => {
-      return  <div key={course.id} className="course--link course--module">
-                <h2 className="course--label">Course</h2>
-                <h3 className="course--title">
-                  <Link className="button-link" to={`/courses/${course.id}`}>{course.title}</Link>
-                </h3>
-              </div> 
-     
-        
+      return (
+        <div key={course.id} className="course--link course--module">
+          <h2 className="course--label">Course</h2>
+          <h3 className="course--title">
+            <Link className="button-link" to={`/courses/${course.id}`}>{course.title}</Link>
+          </h3>
+        </div> 
+      )
     });
 
     return (

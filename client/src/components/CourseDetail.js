@@ -21,29 +21,33 @@ class CourseDetail extends Component {
 
   componentDidMount() {
     this.props.getCourse(this.props.match.params.id)
-      // .then(errors => {
-      //   if (errors.length) {
-      //     console.log(errors)
-      //   }
-      // })
-        .then(data => {
-          this.setState({
-            course: data,
-            userId: data.userId,
-            courseId: data.id,
-            title: data.title,
-            description: data.description,
-            materialsNeeded: data.materialsNeeded,
-            estimatedTime: data.estimatedTime,
-            firstName: data.user.firstName,
-            lastName: data.user.lastName
+      .then(response => {
+        if (response.status === 404) {
+          this.props.history.push('/notfound');
+        } else if (response.status === 500) {
+          this.props.history.push('/error');
+        } else if (response.status === 200) {
+          return response.json().then(data => {
+            this.setState({
+              course: data,
+              userId: data.userId,
+              courseId: data.id,
+              title: data.title,
+              description: data.description,
+              materialsNeeded: data.materialsNeeded,
+              estimatedTime: data.estimatedTime,
+              firstName: data.user.firstName,
+              lastName: data.user.lastName
+            })
           })
-        
+          .catch((err) => {
+            console.log(err);
+            this.props.history.push('/error');
+          });
+        } else {
+          throw new Error();
+        }
       })
-      .catch((err) => {
-        console.log(err);
-        this.props.history.push('/notfound');
-      });
   }
 
   AuthUserOptions() {
