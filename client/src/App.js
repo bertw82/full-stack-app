@@ -74,7 +74,7 @@ class App extends Component {
     } else if (response.status === 401) {
       return null;
     } else if (response.status === 500) {
-      return <Redirect to="/error" />
+      return response.status;
     } else {
       throw new Error();
     }
@@ -86,11 +86,9 @@ class App extends Component {
     if (response.status === 201) {
       return [];
     } else if (response.status === 400) {
-      return response.json().then(data => {
-        return data.errors;
-      });
+      return response.json();
     } else if (response.status === 500) {
-      return <Redirect to="/error" />
+      return response;
     } else {
       throw new Error();
     }
@@ -99,7 +97,6 @@ class App extends Component {
   // sign in a user
   async signIn(emailAddress, password) {
     const user = await this.getUser(emailAddress, password);
-    console.log(user);
     if (user !== null) {
       this.setState(() => {
         return {
@@ -137,7 +134,6 @@ class App extends Component {
               render={ () => 
                 <Courses 
                   api={this.api} 
-                  // getCourses={this.getCourses}
                 />} />
             <PrivateRoute 
               path="/courses/create" 

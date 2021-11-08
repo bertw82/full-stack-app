@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function Form(props) {
-  
+  // form component to be used across multiple components
   const {
     cancel,
     errors,
@@ -33,6 +33,7 @@ export default function Form(props) {
 
 } 
 
+// function to display errors in form validation
 function ErrorsDisplay({ errors }) {
   let errorsDisplay = null;
 

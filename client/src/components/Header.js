@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default class Header extends React.PureComponent {
+  // Header component that displays a users name when signed in
   render() {
     const authUser = this.props.authenticatedUser;
     return (

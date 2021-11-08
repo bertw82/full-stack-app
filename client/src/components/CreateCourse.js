@@ -25,7 +25,6 @@ class CreateCourse extends Component {
     return response;
   }
 
-
   submit() {
     const authUser = this.props.authenticatedUser;
     const {

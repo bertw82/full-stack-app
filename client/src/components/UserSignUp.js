@@ -45,9 +45,11 @@ class UserSignUp extends Component {
     }
 
     this.props.createUser(user)
-      .then(errors => {
-        if (errors.length) {
-          this.setState({ errors });
+      .then(response => {
+        if (response.status === 500) {
+          this.props.history.push('/error');
+        } else if (response.errors) {
+          this.setState({ errors: response.errors });          
         } else {
           this.props.signIn(emailAddress, password);
           console.log('signed in!');
@@ -56,6 +58,7 @@ class UserSignUp extends Component {
       })
       .catch((err) => {
         console.log(err);
+        this.props.history.push('/error');
       })
   }
 

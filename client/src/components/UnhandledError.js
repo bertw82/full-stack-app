@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function UnhandledError() {
+  // component for any other errors
   return (
     <div className="wrap">
       <h2>Error</h2>

@@ -28,12 +28,14 @@ class UserSignIn extends Component {
 
   submit() {
     const { emailAddress, password } = this.state;
+    // redirect a user back to page they tried to access that redirected them to the sign-in page
     const { from } = this.props.location.state || { from: { pathname: '/courses' } };
 
     this.props.signIn(emailAddress, password)
       .then((user) => {
-        if (user === null) {
-          console.log(user);
+        if (user === 500) {
+          this.props.history.push('/error');
+        } else if (user === null) {
           this.setState(() => {
             return { errors: ['Sign-in was unsuccessful'] }
           });

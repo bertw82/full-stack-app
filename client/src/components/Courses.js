@@ -15,11 +15,12 @@ class Courses extends Component {
   }
 
   async getCourses() {
+    // get courses
     const response = await this.props.api('/courses');
       if (response.status === 404) {
         this.props.history.push('/notfound');
       } else if (response.status === 500) {
-        this.props.history.push('/error')
+        this.props.history.push('/error');
       } else if (response.status === 200) {
         return response.json().then(data => {
           this.setState({

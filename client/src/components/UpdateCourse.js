@@ -27,6 +27,7 @@ class UpdateCourse extends Component {
   }
 
   componentDidMount() {
+    // get course to update
     this.props.getCourse(this.props.match.params.id)
       .then(response => {
         if (response.status === 404) {
@@ -62,6 +63,7 @@ class UpdateCourse extends Component {
   }
 
   renderNull() {
+    // render null items as strings to avoid errors in the console
     if (this.state.materialsNeeded === null) {
       this.setState({
         materialsNeeded: '',
@@ -85,6 +87,7 @@ class UpdateCourse extends Component {
     });
   }
 
+  // function to update the course
   async updateCourse(path, data, emailAddress, password) {
     const response = await this.props.api(`/courses/${path}`, 'PUT', data, true, { emailAddress, password});
     return response;
