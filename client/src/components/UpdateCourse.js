@@ -113,20 +113,7 @@ class UpdateCourse extends Component {
   }
 
   submit() {
-    // let data;
-    // if (this.state.estimatedTime === '') {
-    //   this.setState({
-    //     estimatedTime: null
-    //   });
-    // } else if (this.state.materialsNeeded === '') {
-    //   this.setState({
-    //     materialsNeeded: null
-    //   })
-    // } else {
-    //   data = this.state;
-    // }
     const data = this.state;
-    console.log(data);
     this.updateCourse(this.state.id, data, this.props.authenticatedUser.emailAddress, this.props.password)
       .then(response => {
         if (response.status === 204) {
@@ -221,7 +208,6 @@ class UpdateCourse extends Component {
   }
 
   render() {
-    console.log(this.state.estimatedTime);
     return (
       <>
       {
