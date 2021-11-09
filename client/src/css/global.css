@@ -27,6 +27,10 @@ a {
     color: #023047;
     text-decoration: none;
 }
+.sign--a {
+  color: #fb8500;
+}
+
 .wrap {
     max-width: 1250px;
     margin: 0 auto;

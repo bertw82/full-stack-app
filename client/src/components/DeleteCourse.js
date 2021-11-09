@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Redirect, withRouter } from 'react-router';
+import { Redirect, withRouter } from 'react-router-dom';
 import Form from './Form';
 
 class DeleteCourse extends Component {
@@ -71,7 +71,7 @@ class DeleteCourse extends Component {
   }
 
   cancel() {
-    this.props.history.push('/');
+    this.props.history.push(`/courses/${this.state.courseId}`);
   }
 
   renderForm() {

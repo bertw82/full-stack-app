@@ -21,7 +21,6 @@ class UpdateCourse extends Component {
     this.change = this.change.bind(this);
     this.submit = this.submit.bind(this);
     this.cancel = this.cancel.bind(this);
-    this.renderNull = this.renderNull.bind(this);
     this.renderForm = this.renderForm.bind(this);
     this.updateCourse = this.updateCourse.bind(this);
   }
@@ -36,17 +35,55 @@ class UpdateCourse extends Component {
           this.props.history.push('/error');
         } else if (response.status === 200) {
           return response.json().then(data => {
-            this.setState({
-              userId: data.userId,
-              id: data.id,
-              title: data.title,
-              description: data.description,
-              materialsNeeded: data.materialsNeeded,
-              estimatedTime: data.estimatedTime,
-              firstName: data.user.firstName,
-              lastName: data.user.lastName,
-              loading: false
-            })
+            if (data.materialsNeeded === null && data.estimatedTime === null) {
+              this.setState({
+                userId: data.userId,
+                id: data.id,
+                title: data.title,
+                description: data.description,
+                estimatedTime: '',
+                materialsNeeded: '',
+                firstName: data.user.firstName,
+                lastName: data.user.lastName,
+                loading: false
+              });
+            } else if (data.materialsNeeded === null) {
+              this.setState({
+                materialsNeeded: '',
+                userId: data.userId,
+                id: data.id,
+                title: data.title,
+                description: data.description,
+                estimatedTime: data.estimatedTime,
+                firstName: data.user.firstName,
+                lastName: data.user.lastName,
+                loading: false
+              });
+            } else if (data.estimatedTime === null ) {
+              this.setState({
+                userId: data.userId,
+                id: data.id,
+                title: data.title,
+                description: data.description,
+                materialsNeeded: data.materialsNeeded,
+                estimatedTime: '',
+                firstName: data.user.firstName,
+                lastName: data.user.lastName,
+                loading: false
+              });
+            } else {
+              this.setState({
+                userId: data.userId,
+                id: data.id,
+                title: data.title,
+                description: data.description,
+                materialsNeeded: data.materialsNeeded,
+                estimatedTime: data.estimatedTime,
+                firstName: data.user.firstName,
+                lastName: data.user.lastName,
+                loading: false
+              });
+            }
           })
           .catch((err) => {
             console.log(err);
@@ -56,24 +93,6 @@ class UpdateCourse extends Component {
           throw new Error();
         }
       });
-  }
-
-  componentDidUpdate() {
-    this.renderNull();
-  }
-
-  renderNull() {
-    // render null items as strings to avoid errors in the console
-    if (this.state.materialsNeeded === null) {
-      this.setState({
-        materialsNeeded: '',
-      });
-    }
-    if (this.state.estimatedTime === null ) {
-      this.setState({
-        estimatedTime: '',
-      });
-    }
   }
 
   change(event) {
@@ -94,7 +113,20 @@ class UpdateCourse extends Component {
   }
 
   submit() {
+    // let data;
+    // if (this.state.estimatedTime === '') {
+    //   this.setState({
+    //     estimatedTime: null
+    //   });
+    // } else if (this.state.materialsNeeded === '') {
+    //   this.setState({
+    //     materialsNeeded: null
+    //   })
+    // } else {
+    //   data = this.state;
+    // }
     const data = this.state;
+    console.log(data);
     this.updateCourse(this.state.id, data, this.props.authenticatedUser.emailAddress, this.props.password)
       .then(response => {
         if (response.status === 204) {
@@ -116,7 +148,7 @@ class UpdateCourse extends Component {
   }
 
   cancel() {
-    this.props.history.push('/');
+    this.props.history.push(`/courses/${this.state.id}`);
   }
 
   renderForm() {
@@ -189,6 +221,7 @@ class UpdateCourse extends Component {
   }
 
   render() {
+    console.log(this.state.estimatedTime);
     return (
       <>
       {

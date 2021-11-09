@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Form from './Form';
-import { withRouter } from 'react-router';
+import { withRouter, Link } from 'react-router-dom';
 
 class UserSignIn extends Component {
   constructor(props) {
@@ -61,7 +61,6 @@ class UserSignIn extends Component {
     } = this.state;
 
     return (
-      <>
       <div className="form--centered">
         <h2>Sign In</h2>
         <Form 
@@ -78,7 +77,7 @@ class UserSignIn extends Component {
                 type="email" 
                 value={emailAddress} 
                 onChange={this.change}
-                autoComplete="on"
+                autoComplete="off"
                 />
               <label htmlFor="password">Password</label>
               <input 
@@ -87,12 +86,12 @@ class UserSignIn extends Component {
                 type="password" 
                 value={password}
                 onChange={this.change}
-                autoComplete="on" />
+                autoComplete="off" />
             </React.Fragment>
           )}
         />
+        <p>Don't have a user account? Click here to <Link to="/signup" className="sign--a">sign up</Link>!</p>
       </div>
-      </>
     );
   }
 }
